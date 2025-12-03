@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <h3 class="card-title mb-3 text-center">Reset Password</h3>
+
+        {# STEP 1: Enter Email #}
+        {% if step == 1 %}
+        <form method="post">
+          <input type="hidden" name="step" value="1">
+          <div class="mb-3">
+            <label class="form-label">Enter your account email</label>
+            <input class="form-control" type="email" name="email" required>
+          </div>
+          <button class="btn btn-primary w-100" type="submit">Next</button>
+        </form>
+        {% endif %}
+
+        {# STEP 2: Answer Security Questions #}
+        {% if step == 2 %}
+        <form method="post">
+          <input type="hidden" name="step" value="2">
+          <input type="hidden" name="email" value="{{ user.email }}">
+
+          <p class="text-muted mb-3">
+            Answer your security questions to verify your identity.
+          </p>
+
+          <div class="mb-3">
+            <label class="form-label">{{ user.q1 }}</label>
+            <input class="form-control" type="text" name="a1" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">{{ user.q2 }}</label>
+            <input class="form-control" type="text" name="a2" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">{{ user.q3 }}</label>
+            <input class="form-control" type="text" name="a3" required>
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">Verify Answers</button>
+        </form>
+        {% endif %}
+
+        {# STEP 3: Set New Password #}
+        {% if step == 3 %}
+        <form method="post">
+          <input type="hidden" name="step" value="3">
+          <input type="hidden" name="email" value="{{ email }}">
+
+          <p class="text-muted mb-3">
+            Security questions verified. Set a new password for your account.
+          </p>
+
+          <div class="mb-3">
+            <label class="form-label">New Password</label>
+            <input class="form-control" type="password" name="new_password" required>
+          </div>
+
+          <button class="btn btn-success w-100" type="submit">Reset Password</button>
+        </form>
+        {% endif %}
+
+        <div class="text-center mt-3">
+          <a href="{{ url_for('login') }}">Back to login</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

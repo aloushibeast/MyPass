@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Your Vault</h3>
+  <div class="btn-group">
+    <a class="btn btn-outline-primary btn-sm" href="{{ url_for('add_login') }}">Add Login</a>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('add_card') }}">Add Credit Card</a>
+    <a class="btn btn-outline-success btn-sm" href="{{ url_for('add_identity') }}">Add Identity</a>
+    <a class="btn btn-outline-dark btn-sm" href="{{ url_for('add_note') }}">Add Secure Note</a>
+  </div>
+</div>
+
+{% if items %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Label</th>
+          <th>Details</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in items %}
+        <tr>
+          <td>{{ item.item_type.replace("_", " ") }}</td>
+          <td>{{ item.label }}</td>
+          <td style="max-width: 420px;">
+            {% if item.item_type == "LOGIN" %}
+              <div><strong>Username:</strong>
+                {% if item.username_full %}
+                  <span id="u-{{ item.id }}"
+                        data-masked="{{ item.username_masked }}"
+                        data-full="{{ item.username_full }}"
+                        data-state="masked">
+                      {{ item.username_masked }}
+                  </span>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="toggleMask('u-{{ item.id }}', this)">Show</button>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="copyField('{{ item.username_full }}', true)">Copy</button>
+                {% else %}
+                  <span class="text-muted">None</span>
+                {% endif %}
+              </div>
+
+              <div><strong>Password:</strong>
+                {% if item.password_full %}
+                  <span id="p-{{ item.id }}"
+                        data-masked="{{ item.password_masked }}"
+                        data-full="{{ item.password_full }}"
+                        data-state="masked">
+                      {{ item.password_masked }}
+                  </span>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="toggleMask('p-{{ item.id }}', this)">Show</button>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="copyField('{{ item.password_full }}', true)">Copy</button>
+                {% else %}
+                  <span class="text-muted">None</span>
+                {% endif %}
+              </div>
+
+              <div><strong>URL:</strong>
+                {% if item.url_full %}
+                  <a href="{{ item.url_full }}" target="_blank">{{ item.url_full }}</a>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="copyField('{{ item.url_full }}', false)">Copy URL</button>
+                {% else %}
+                  <span class="text-muted">None</span>
+                {% endif %}
+              </div>
+
+            {% elif item.item_type == "CREDIT_CARD" %}
+              <div><strong>Card Holder:</strong> {{ item.card_holder or "N/A" }}</div>
+              <div><strong>Number:</strong>
+                {% if item.card_number_full %}
+                  <span id="c-{{ item.id }}"
+                        data-masked="{{ item.card_number_masked }}"
+                        data-full="{{ item.card_number_full }}"
+                        data-state="masked">
+                      {{ item.card_number_masked }}
+                  </span>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="toggleMask('c-{{ item.id }}', this)">Show</button>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="copyField('{{ item.card_number_full }}', true)">Copy</button>
+                {% else %}
+                  <span class="text-muted">None</span>
+                {% endif %}
+              </div>
+              <div><strong>Expiry:</strong> {{ item.card_expiry or "N/A" }}</div>
+              <div><strong>CVV:</strong>
+                {% if item.card_cvv_full %}
+                  <span id="cvv-{{ item.id }}"
+                        data-masked="{{ item.card_cvv_masked }}"
+                        data-full="{{ item.card_cvv_full }}"
+                        data-state="masked">
+                      {{ item.card_cvv_masked }}
+                  </span>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="toggleMask('cvv-{{ item.id }}', this)">Show</button>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="copyField('{{ item.card_cvv_full }}', true)">Copy</button>
+                {% else %}
+                  <span class="text-muted">None</span>
+                {% endif %}
+              </div>
+
+            {% elif item.item_type == "IDENTITY" %}
+              <div><strong>Type:</strong> {{ item.identity_type or "N/A" }}</div>
+              <div><strong>Number:</strong>
+                {% if item.identity_number_full %}
+                  <span id="id-{{ item.id }}"
+                        data-masked="{{ item.identity_number_masked }}"
+                        data-full="{{ item.identity_number_full }}"
+                        data-state="masked">
+                      {{ item.identity_number_masked }}
+                  </span>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="toggleMask('id-{{ item.id }}', this)">Show</button>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="copyField('{{ item.identity_number_full }}', true)">Copy</button>
+                {% else %}
+                  <span class="text-muted">None</span>
+                {% endif %}
+              </div>
+
+            {% elif item.item_type == "SECURE_NOTE" %}
+              <div><strong>Note:</strong>
+                {% if item.note_full %}
+                  <span id="note-{{ item.id }}"
+                        data-masked="{{ item.note_preview or item.note_full }}"
+                        data-full="{{ item.note_full }}"
+                        data-state="masked">
+                      {{ item.note_preview or item.note_full }}
+                  </span>
+                  <button class="btn btn-sm btn-link p-0 ms-1"
+                          onclick="toggleMask('note-{{ item.id }}', this)">Show full</button>
+                {% else %}
+                  <span class="text-muted">Empty</span>
+                {% endif %}
+              </div>
+            {% endif %}
+          </td>
+          <td>
+            <a class="btn btn-sm btn-outline-secondary mb-1" href="{{ url_for('edit_item', item_id=item.id) }}">
+              Edit
+            </a>
+            <form method="post" action="{{ url_for('delete_item', item_id=item.id) }}" class="d-inline">
+              <button class="btn btn-sm btn-outline-danger mb-1" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-muted">No items yet. Use the buttons above to add entries to your vault.</p>
+{% endif %}
+
+<script>
+  // Toggle mask/unmask for sensitive spans
+  function toggleMask(spanId, btn) {
+    const span = document.getElementById(spanId);
+    if (!span) return;
+
+    const masked = span.getAttribute("data-masked");
+    const full = span.getAttribute("data-full");
+    const state = span.getAttribute("data-state") || "masked";
+
+    if (state === "masked") {
+      span.textContent = full;
+      span.setAttribute("data-state", "unmasked");
+      if (btn) btn.textContent = "Hide";
+    } else {
+      span.textContent = masked;
+      span.setAttribute("data-state", "masked");
+      if (btn) btn.textContent = "Show";
+    }
+  }
+
+  // Auto-clear clipboard after X ms for sensitive data
+  const CLEAR_CLIPBOARD_MS = 60 * 1000; // 1 minute
+  let clipboardTimeout = null;
+
+  function copyField(value, isSensitive) {
+    if (!navigator.clipboard) {
+      alert("Clipboard not supported in this browser.");
+      return;
+    }
+
+    navigator.clipboard.writeText(value).then(() => {
+      if (isSensitive) {
+        if (clipboardTimeout) {
+          clearTimeout(clipboardTimeout);
+        }
+        clipboardTimeout = setTimeout(() => {
+          navigator.clipboard.writeText("");
+        }, CLEAR_CLIPBOARD_MS);
+      }
+    }).catch(err => {
+      console.error("Clipboard error:", err);
+    });
+  }
+</script>
+{% endblock %}

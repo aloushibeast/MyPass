@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title mb-3 text-center">Create MyPass Account</h3>
+
+        <form method="post">
+          <!-- Email + Password -->
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" name="email" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input class="form-control" type="password" name="password" id="password-input" required>
+            <div class="mt-2">
+              <div class="progress" style="height: 6px;">
+                <div id="password-strength-bar" class="progress-bar" role="progressbar"
+                     style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                </div>
+              </div>
+              <small id="password-strength-text" class="text-muted">
+                Enter a password to see its strength.
+              </small>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <h5 class="mb-3">Security Questions (for password recovery)</h5>
+
+          <!-- Question 1 -->
+          <div class="mb-3">
+            <label class="form-label">Question 1</label>
+            <input class="form-control" type="text" name="q1" placeholder="e.g., What is your favorite movie?" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Answer 1</label>
+            <input class="form-control" type="text" name="a1" required>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="mb-3">
+            <label class="form-label">Question 2</label>
+            <input class="form-control" type="text" name="q2" placeholder="e.g., City you were born in?" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Answer 2</label>
+            <input class="form-control" type="text" name="a2" required>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="mb-3">
+            <label class="form-label">Question 3</label>
+            <input class="form-control" type="text" name="q3" placeholder="e.g., Name of your first pet?" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Answer 3</label>
+            <input class="form-control" type="text" name="a3" required>
+          </div>
+
+          <button class="btn btn-primary w-100" type="submit">Register</button>
+        </form>
+
+        <div class="text-center mt-3">
+          <a href="{{ url_for('login') }}">Back to login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const pwInput = document.getElementById("password-input");
+  const bar = document.getElementById("password-strength-bar");
+  const text = document.getElementById("password-strength-text");
+
+  function evaluateStrength(pw) {
+    let score = 0;
+
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
+    if (/[a-z]/.test(pw)) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+    // score range: 0–6
+    return score;
+  }
+
+  function updateMeter() {
+    const pw = pwInput.value || "";
+    const score = evaluateStrength(pw);
+
+    let width = 0;
+    let label = "Too weak";
+    let cls = "bg-danger";
+
+    if (pw.length === 0) {
+      width = 0;
+      label = "Enter a password to see its strength.";
+      cls = "bg-danger";
+    } else if (score <= 2) {
+      width = 25;
+      label = "Weak";
+      cls = "bg-danger";
+    } else if (score <= 4) {
+      width = 60;
+      label = "Medium";
+      cls = "bg-warning";
+    } else if (score <= 5) {
+      width = 85;
+      label = "Strong";
+      cls = "bg-success";
+    } else {
+      width = 100;
+      label = "Very strong";
+      cls = "bg-success";
+    }
+
+    bar.style.width = width + "%";
+    bar.className = "progress-bar " + cls;
+    bar.setAttribute("aria-valuenow", width);
+    text.textContent = label;
+  }
+
+  pwInput.addEventListener("input", updateMeter);
+</script>
+{% endblock %}
